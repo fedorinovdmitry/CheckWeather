@@ -26,8 +26,8 @@ extension Weather: JSONDecodable {
             let pressure = json["pressure"] as? Double,
             let iconString = json["icon"] as? String
             else { return nil }
-        self.temperature = (temperature - 32) / 1.8
-        self.apparentTemperature = (apparentTemperature - 32) / 1.8
+        self.temperature = temperature
+        self.apparentTemperature = apparentTemperature
         self.humidity = humidity
         self.pressure = pressure
         self.icon = UIImage(named: iconString) ?? #imageLiteral(resourceName: "cloudy")

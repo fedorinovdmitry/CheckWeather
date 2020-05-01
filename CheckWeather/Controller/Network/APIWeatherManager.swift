@@ -17,23 +17,27 @@ struct Coordinates {
 enum ForecastType: FinalURLProtocol {
     case current(coordinates: Coordinates)
     
+    var request: URLRequest {
+        let url = URL(string: path, relativeTo: baseURL)
+        return URLRequest(url: url!)
+    }
+    
     var apiKey: String {
         return "2a6d8e376a69c1ae07d4a52dd0c2dfdc"
     }
     var baseURL: URL {
         return URL(string: "https://api.darksky.net")!
     }
-    
+    var requiredPath: String {
+        return "/forecast/\(apiKey)/"
+    }
     var path: String {
         switch self {
         case .current(let coordinates):
-            return "/forecast/\(apiKey)/\(coordinates.latitude),\(coordinates.longtitude)"
+            let coordinatesPath = "\(coordinates.latitude),\(coordinates.longtitude)"
+            let optionalCurrentWeatherParametrs = "?exclude=minutely,hourly,daily,alerts,flags&units=auto"
+            return requiredPath + coordinatesPath + optionalCurrentWeatherParametrs
         }
-    }
-    
-    var request: URLRequest {
-        let url = URL(string: path, relativeTo: baseURL)
-        return URLRequest(url: url!)
     }
         
 }

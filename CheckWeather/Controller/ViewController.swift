@@ -8,7 +8,8 @@
 
 import UIKit
 
-let key = "2a6d8e376a69c1ae07d4a52dd0c2dfdc"
+
+// TODO: - добавить фотки для иконок и переписать сетевой слой используя кодабл
 
 class ViewController: UIViewController {
 
