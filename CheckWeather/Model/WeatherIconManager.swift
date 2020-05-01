@@ -41,9 +41,8 @@ enum WeetherIconManager: String {
         }
     }
 }
-
 extension WeetherIconManager {
     var image: UIImage {
-        return UIImage(named: self.rawValue) ?? #imageLiteral(resourceName: "cloudly")
+        return UIImage(named: self.rawValue) ?? #imageLiteral(resourceName: "unpredicted-icon")
     }
 }

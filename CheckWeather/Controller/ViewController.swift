@@ -8,9 +8,6 @@
 
 import UIKit
 
-
-// TODO: - добавить фотки для иконок и переписать сетевой слой используя кодабл
-
 class ViewController: UIViewController {
 
     // MARK: - Custom types
@@ -27,6 +24,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var appearentTemperatureLabel: UILabel!
     
     @IBOutlet weak var refreshButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
     // MARK: - Public Properties
@@ -44,6 +42,35 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         
+        getCurrentWeatherData()
+        
+    
+    }
+
+    
+    // MARK: - IBAction
+    
+    @IBAction func refresh(_ sender: UIButton) {
+        
+        getCurrentWeatherData()
+    }
+    
+    // MARK: - Public methods
+    
+    // MARK: - Private methods
+    
+    private func toggleActivityIndicator(on: Bool) {
+        refreshButton.isHidden = on
+        
+        if on {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
+    }
+    
+    private func getCurrentWeatherData() {
+        toggleActivityIndicator(on: true)
         weatherManager.fetchCurrentWeatherWith(coordinates: coordinates) { [weak self] (result) in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -54,22 +81,11 @@ class ViewController: UIViewController {
                     self.alertError(title: "Unable to get data", error: error)
                     print(error)
                 }
+                self.toggleActivityIndicator(on: false)
             }
         }
         
-    
     }
-
-    
-    // MARK: - IBAction
-    
-    @IBAction func refresh(_ sender: UIButton) {
-        
-    }
-    
-    // MARK: - Public methods
-    
-    // MARK: - Private methods
     
     private func updateUIWith(currentWeather: CurrentWeather) {
         

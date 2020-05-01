@@ -66,6 +66,7 @@ extension APIManager {
             if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
                 print(json)
             }
+            
             //ответ пришел, рассматриваем статус ответа
             switch httpResponse.statusCode {
             case 200:
