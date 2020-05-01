@@ -44,10 +44,6 @@ enum ForecastType: FinalURLProtocol {
 
 final class APIWeatherManager: APIManager {
     
-    // MARK: - Custom types
-    
-    // MARK: - Constants
-    
     // MARK: - Public Properties
     
     var sessionConfiguration: URLSessionConfiguration
@@ -55,8 +51,6 @@ final class APIWeatherManager: APIManager {
     lazy var session: URLSession = {
         return URLSession(configuration: self.sessionConfiguration)
     }()
-    
-    // MARK: - Private Properties
     
     // MARK: - Init
     
@@ -71,21 +65,15 @@ final class APIWeatherManager: APIManager {
     // MARK: - Public methods
     
     func fetchCurrentWeatherWith(coordinates: Coordinates,
-                                 completionHandler: @escaping (APIResult<Weather>) -> Void) {
+                                 completionHandler: @escaping (APIResult<CurrentWeather>) -> Void) {
         let request = ForecastType.current(coordinates: coordinates).request
-        fetch(request: request, parse: { (json) -> Weather? in
-            if let json = json["currently"] as? JSON {
-                let currentWeather = Weather(json: json)
-                return currentWeather
-            }
-            return nil
-        }, completionHandler: completionHandler)
+        fetch(request: request,
+              parse: { (data) -> CurrentWeather? in
+                return try? JSONDecoder().decode(CurrentWeatherResponse.self,
+                                                 from: data).currently
+        },
+              completionHandler: completionHandler)
     }
-    
-    // MARK: - Private methods
-    
-    // MARK: - Navigation
-
    
     
 }

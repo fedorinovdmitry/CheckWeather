@@ -32,7 +32,7 @@ class ViewController: UIViewController {
     // MARK: - Public Properties
     
     lazy var weatherManager = APIWeatherManager()
-    let coordinates = Coordinates(latitude: 52.929261, longtitude: 36.044182)
+    let coordinates = Coordinates(latitude: 59.929261, longtitude: -36.044182)
     
     // MARK: - Private Properties
     
@@ -71,9 +71,9 @@ class ViewController: UIViewController {
     
     // MARK: - Private methods
     
-    private func updateUIWith(currentWeather: Weather) {
+    private func updateUIWith(currentWeather: CurrentWeather) {
         
-        self.imageView.image = currentWeather.icon
+        self.imageView.image = currentWeather.iconImage
         
         self.pressureLabel.text = currentWeather.pressureString
         self.humidityLabel.text = currentWeather.humidityString

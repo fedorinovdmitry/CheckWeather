@@ -8,13 +8,9 @@
 
 import Foundation
 
-typealias JSON = [String:AnyObject]
-typealias JSONTask = URLSessionDataTask
-typealias JSONCompletionHandler = (JSON?, HTTPURLResponse?, Error?) -> Void
 
-protocol JSONDecodable {
-    init?(json: JSON)
-}
+typealias JSONTask = URLSessionDataTask
+typealias JSONCompletionHandler = (Data?, HTTPURLResponse?, Error?) -> Void
 
 enum APIResult<T> {
     case success(T)
@@ -29,15 +25,15 @@ protocol FinalURLProtocol {
 }
 
 protocol APIManager {
-
+    
     var sessionConfiguration: URLSessionConfiguration { get }
     var session: URLSession { get }
     
     func JSONTaskWith(request: URLRequest,
                       completionHandler: @escaping JSONCompletionHandler ) -> JSONTask
-    func fetch<T: JSONDecodable>(request: URLRequest,
-                  parse: @escaping (JSON) -> T?,
-                  completionHandler: @escaping (APIResult<T>) -> Void)
+    func fetch<T: Decodable>(request: URLRequest,
+                             parse: @escaping (Data) -> T?,
+                             completionHandler: @escaping (APIResult<T>) -> Void)
     
 }
 
@@ -67,18 +63,15 @@ extension APIManager {
                 }
                 return
             }
-            
+            if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String:Any] {
+                print(json)
+            }
             //ответ пришел, рассматриваем статус ответа
             switch httpResponse.statusCode {
             case 200:
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data,
-                                                                options: []) as? JSON
-                    completionHandler(json,
-                                      httpResponse, nil)
-                } catch let error as NSError {
-                    completionHandler(nil, httpResponse, error)
-                }
+                completionHandler(data,
+                                  httpResponse,
+                                  nil)
             default:
                 let error = NSError(domain: CWResponseErrorDomain, code: WrongResponse, userInfo: nil)
                 completionHandler(nil, httpResponse, error)
@@ -91,18 +84,19 @@ extension APIManager {
         
     }
     
-    func fetch<T>(request: URLRequest,
-                  parse: @escaping (JSON) -> T?,
-                  completionHandler: @escaping (APIResult<T>) -> Void) {
-        let dataTask = JSONTaskWith(request: request) { (json, response, error) in
-            guard let json = json else {
+    func fetch<T: Decodable>(request: URLRequest,
+                             parse: @escaping (Data) -> T?,
+                             completionHandler: @escaping (APIResult<T>) -> Void) {
+        let dataTask = JSONTaskWith(request: request) { (data, response, error) in
+            guard let data = data else {
                 if let error = error {
                     completionHandler(.failure(error))
                 }
                 return
             }
+            
             //проверяем соответствует json ожидаемому результату
-            if let value = parse(json) {
+            if let value = parse(data) {
                 completionHandler(.success(value))
             } else {
                 let error = NSError(domain: CWNetworkingErrorDomain,
